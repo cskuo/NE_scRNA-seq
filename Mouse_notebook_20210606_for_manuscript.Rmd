@@ -415,5 +415,74 @@ sensory_genes <- c(mechano_genes_list, 'Mcoln3',thermal_genes, O2_genes, mito_ge
 genes_to_use <- sensory_genes
 ```
 
+#Data for Carcinod re-analysis using data form Garbiel et al (2020)
+#Quantile quantile normalization performed on data from Gabriel et al (2020)
+#load packages
+```{r}
+rm(list=ls())
+library(umap) 
+library(ade4)
+library(FNN)
+library(reshape2)
+library(ape)
+library(ggpubr)
+library(foreach)
+library(doParallel)
+library(gridExtra)
+library(eulerr)
+library(viridis)
+library(DESeq2)
+library(RColorBrewer)
+```
+# Load attributes and read counts
+```{r}
+--------------------------------------------------------
+#Attributes = read.table(unzip(paste0(project_path,'DRMetrics/data/Attributes.txt.zip'),exdir = paste0(project_path,"zip_extract"))[1], sep = '\t', header = T)
+#Attributes = read.table(unzip(paste0(project_path,'Attributes.txt.zip'),exdir = paste0(project_path,"zip_extract"))[1], sep = '\t', header = T)
+Attributes = read.table("Attributes.txt",sep = '\t', header = T)
+Attributes[1:5,1:10]
+#   Sample_ID Histopathology Age Sex Smoking_status Survival_months Histopathology_simplified Molecular_clusters
+# 1   LNEN002       Atypical  49   M          Never           287.7                  Atypical        Carcinoid-B
+# 2   LNEN003       Atypical  17   M          Never           100.0                  Atypical       Carcinoid-A2
+# 3   LNEN004       Atypical  18   M        Current           163.2                  Atypical       Carcinoid-A2
+# 4   LNEN005       Atypical  80   M         Former           144.6           Supra_carcinoid    Supra_carcinoid
+# 5   LNEN006       Atypical  58   F          Never           166.3                  Atypical       Carcinoid-A2
+#   Histopathology_MachineLearning_prediction    HOXC8
+# 1                                   Typical 3.179271
+# 2                                   Typical 3.965615
+# 3                                   Typical 4.813331
+# 4                                     LCNEC 3.930598
+# 5                                   Typical 2.796746
+
+dim(Attributes)
+# [1] 238 108
+summary(Attributes$Histopathology)
+# Atypical           Carcinoid               LCNEC  LCNEC combined ADC LCNEC combined SCLC LCNEC combined SqCC                SCLC 
+# 40                   3                  56                   1                   9                   3                  51 
+# Typical 
+# 75 
+summary(Attributes$Molecular_clusters)
+# Carcinoid-A1    Carcinoid-A2     Carcinoid-B             LC1             LC2             LC3        LCNEC/NA LCNEC/SCLC-like     LCNEC/TypeI 
+# 33              32              20              15               8               7               3              11              30 
+# LCNEC/TypeII SCLC/LCNEC-like  SCLC/SCLC-like Supra_carcinoid 
+# 25               9              42               3 
+
+## ---------------------------------------------------------------
+## 10/25/2021 11:28am
+# read_counts = as.matrix(read.table(unzip(paste0(project_path,'DRMetrics/data/read_counts_all.txt.zip'),exdir = paste0(project_path,"zip_extract"))[1], header = T, row.names=1))
+read_counts = read.table("read_counts_all.txt", header = T, row.names=1)
+read_counts[1:5,1:10]
+#                    LNEN002 LNEN003 LNEN004 LNEN005 LNEN006 LNEN007 LNEN008 LNEN009 LNEN010 LNEN011
+# ENSG00000000003.15    1168      91      96     241     166     207     196     184      52     130
+# ENSG00000000005.6        0       0       0       0       0      33       0       0      45      22
+# ENSG00000000419.12     438     607     802     941     519     645     386    1157     539     702
+# ENSG00000000457.14    1531    1385    1754    1682    1214     924     786     734    2486    1551
+# ENSG00000000460.17      53      83      53     193      64      51      62     137     113     110
+
+
+```
+#normalization
+```{r}
+
 
 
